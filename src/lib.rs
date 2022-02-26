@@ -3,10 +3,12 @@ use bevy::{input::system::exit_on_esc_system, prelude::*};
 mod input;
 mod loading;
 mod menu;
+mod player;
 
 use crate::input::InputPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
+use crate::player::PlayerPlugin;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 pub enum AppState {
@@ -24,6 +26,7 @@ impl Plugin for GamePlugin {
             .add_plugin(LoadingPlugin)
             .add_plugin(MenuPlugin)
             .add_plugin(InputPlugin)
+            .add_plugin(PlayerPlugin)
             .add_system(exit_on_esc_system);
     }
 }

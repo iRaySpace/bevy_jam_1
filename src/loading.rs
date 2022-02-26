@@ -11,11 +11,18 @@ pub struct FontAssets {
     pub default: Handle<Font>,
 }
 
+#[derive(AssetCollection)]
+pub struct SpritesheetAssets {
+    #[asset(path = "spritesheets/character.png")]
+    pub character: Handle<Image>,
+}
+
 impl Plugin for LoadingPlugin {
     fn build(&self, app: &mut App) {
         AssetLoader::new(AppState::Loading)
             .continue_to_state(AppState::Menu)
             .with_collection::<FontAssets>()
+            .with_collection::<SpritesheetAssets>()
             .build(app);
     }
 }
