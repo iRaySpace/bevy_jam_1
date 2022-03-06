@@ -15,13 +15,7 @@ pub struct Animation {
     pub duration: Timer,
 }
 
-fn animate_system(
-    time: Res<Time>,
-    mut query: Query<(
-        &mut Animation,
-        &mut TextureAtlasSprite
-    )>,
-) {
+fn animate_system(time: Res<Time>, mut query: Query<(&mut Animation, &mut TextureAtlasSprite)>) {
     for (mut anim, mut sprite) in query.iter_mut() {
         anim.duration.tick(time.delta());
         if anim.duration.just_finished() {

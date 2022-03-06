@@ -3,12 +3,14 @@ use bevy::{input::system::exit_on_esc_system, prelude::*};
 mod animation;
 mod input;
 mod loading;
+mod map;
 mod menu;
 mod player;
 
 use crate::animation::AnimationPlugin;
 use crate::input::InputPlugin;
 use crate::loading::LoadingPlugin;
+use crate::map::MapPlugin;
 use crate::menu::MenuPlugin;
 use crate::player::PlayerPlugin;
 
@@ -29,6 +31,7 @@ impl Plugin for GamePlugin {
             .add_plugin(MenuPlugin)
             .add_plugin(AnimationPlugin)
             .add_plugin(InputPlugin)
+            .add_plugin(MapPlugin)
             .add_plugin(PlayerPlugin)
             .add_system(exit_on_esc_system);
     }

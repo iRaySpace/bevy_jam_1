@@ -1,7 +1,7 @@
-use bevy::prelude::*;
-use crate::player::Player;
 use crate::animation::Animation;
+use crate::player::Player;
 use crate::AppState;
+use bevy::prelude::*;
 
 pub struct InputPlugin;
 

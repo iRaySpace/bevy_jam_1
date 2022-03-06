@@ -15,7 +15,6 @@ fn render_player(
     let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(48.0, 48.0), 4, 4);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,

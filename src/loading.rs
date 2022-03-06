@@ -15,6 +15,9 @@ pub struct FontAssets {
 pub struct SpritesheetAssets {
     #[asset(path = "spritesheets/character.png")]
     pub character: Handle<Image>,
+
+    #[asset(path = "spritesheets/grass.png")]
+    pub grass: Handle<Image>,
 }
 
 impl Plugin for LoadingPlugin {
