@@ -16,42 +16,24 @@ fn render_map(
     let map_entity = commands.spawn().id();
     let mut map = Map::new(0u16, map_entity);
 
-    let (mut layer_builder, _) = LayerBuilder::new(
-        &mut commands,
-        LayerSettings::new(
-            MapSize(2, 2),
-            ChunkSize(8, 8),
-            TileSize(16.0, 16.0),
-            TextureSize(160.0, 128.0),
-        ),
-        0u16,
-        0u16,
+    let layer_settings = LayerSettings::new(
+        MapSize(2, 2),
+        ChunkSize(64, 64),
+        TileSize(16., 16.),
+        TextureSize(160., 128.),
     );
 
+    let (mut layer_builder, _) = LayerBuilder::new(&mut commands, layer_settings, 0u16, 0u16);
     layer_builder.set_all(TileBundle::default());
 
-    layer_builder.fill(
-        TilePos(0, 0),
-        TilePos(10, 10),
-        Tile {
-            texture_index: 0,
-            ..Default::default()
-        }
-        .into(),
-    );
-
-    let layer_entity = map_query.build_layer(
-        &mut commands,
-        layer_builder,
-        texture_handle,
-    );
-
+    let layer_entity = map_query.build_layer(&mut commands, layer_builder, texture_handle);
     map.add_layer(&mut commands, 0u16, layer_entity);
 
+    let center = layer_settings.get_pixel_center();
     commands
         .entity(map_entity)
         .insert(map)
-        .insert(Transform::from_xyz(0., 0., 0.))
+        .insert(Transform::from_xyz(-center.x, -center.y, 0.))
         .insert(GlobalTransform::default());
 }
 
