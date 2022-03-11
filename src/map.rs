@@ -7,18 +7,17 @@ fn render_map(
     mut commands: Commands,
     spritesheet_assets: Res<SpritesheetAssets>,
     mut map_query: MapQuery,
-    asset_server: Res<AssetServer>,
 ) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 
-    let texture_handle = asset_server.load("spritesheets/grass.png");
+    let texture_handle = spritesheet_assets.grass.clone();
 
     let map_entity = commands.spawn().id();
     let mut map = Map::new(0u16, map_entity);
 
     let layer_settings = LayerSettings::new(
         MapSize(2, 2),
-        ChunkSize(64, 64),
+        ChunkSize(12, 12),
         TileSize(16., 16.),
         TextureSize(160., 128.),
     );
