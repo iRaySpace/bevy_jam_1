@@ -25,6 +25,98 @@ fn render_map(
     let (mut layer_builder, _) = LayerBuilder::new(&mut commands, layer_settings, 0u16, 0u16);
     layer_builder.set_all(TileBundle::default());
 
+    // edges
+    for x in 1..23 {
+        layer_builder
+            .set_tile(
+                TilePos(x, 0),
+                Tile {
+                    texture_index: 52,
+                    ..Default::default()
+                }
+                .into(),
+            )
+            .unwrap();
+    }
+    for x in 1..23 {
+        layer_builder
+            .set_tile(
+                TilePos(x, 23),
+                Tile {
+                    texture_index: 32,
+                    ..Default::default()
+                }
+                .into(),
+            )
+            .unwrap();
+    }
+    for x in 1..23 {
+        layer_builder
+            .set_tile(
+                TilePos(0, x),
+                Tile {
+                    texture_index: 41,
+                    ..Default::default()
+                }
+                .into(),
+            )
+            .unwrap();
+    }
+    for x in 1..23 {
+        layer_builder
+            .set_tile(
+                TilePos(23, x),
+                Tile {
+                    texture_index: 43,
+                    ..Default::default()
+                }
+                .into(),
+            )
+            .unwrap();
+    }
+
+    // corners
+    layer_builder
+        .set_tile(
+            TilePos(0, 0),
+            Tile {
+                texture_index: 51,
+                ..Default::default()
+            }
+            .into(),
+        )
+        .unwrap();
+    layer_builder
+        .set_tile(
+            TilePos(23, 0),
+            Tile {
+                texture_index: 53,
+                ..Default::default()
+            }
+            .into(),
+        )
+        .unwrap();
+    layer_builder
+        .set_tile(
+            TilePos(23, 23),
+            Tile {
+                texture_index: 33,
+                ..Default::default()
+            }
+            .into(),
+        )
+        .unwrap();
+    layer_builder
+        .set_tile(
+            TilePos(0, 23),
+            Tile {
+                texture_index: 31,
+                ..Default::default()
+            }
+            .into(),
+        )
+        .unwrap();
+
     let layer_entity = map_query.build_layer(&mut commands, layer_builder, texture_handle);
     map.add_layer(&mut commands, 0u16, layer_entity);
 
