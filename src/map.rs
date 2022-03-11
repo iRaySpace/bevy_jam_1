@@ -10,20 +10,31 @@ fn render_map(
 ) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 
-    let texture_handle = spritesheet_assets.grass.clone();
-
     let map_entity = commands.spawn().id();
     let mut map = Map::new(0u16, map_entity);
 
     let layer_settings = LayerSettings::new(
         MapSize(2, 2),
-        ChunkSize(12, 12),
+        ChunkSize(32, 32),
         TileSize(16., 16.),
-        TextureSize(160., 128.),
+        TextureSize(64., 16.),
     );
 
-    let (mut layer_builder, _) = LayerBuilder::new(&mut commands, layer_settings, 0u16, 0u16);
+    let (mut layer_builder, _) = LayerBuilder::new(
+        &mut commands,
+        LayerSettings::new(
+            MapSize(2, 2),
+            ChunkSize(12, 12),
+            TileSize(16., 16.),
+            TextureSize(160., 128.),
+        ),
+        0u16,
+        1u16,
+    );
     layer_builder.set_all(TileBundle::default());
+
+    let (mut layer_water_builder, _) = LayerBuilder::new(&mut commands, layer_settings, 0u16, 0u16);
+    layer_water_builder.set_all(TileBundle::default());
 
     // edges
     for x in 1..23 {
@@ -117,8 +128,19 @@ fn render_map(
         )
         .unwrap();
 
-    let layer_entity = map_query.build_layer(&mut commands, layer_builder, texture_handle);
-    map.add_layer(&mut commands, 0u16, layer_entity);
+    let layer_entity = map_query.build_layer(
+        &mut commands,
+        layer_builder,
+        spritesheet_assets.grass.clone(),
+    );
+    let layer_water_entity = map_query.build_layer(
+        &mut commands,
+        layer_water_builder,
+        spritesheet_assets.water.clone(),
+    );
+
+    map.add_layer(&mut commands, 1u16, layer_entity);
+    map.add_layer(&mut commands, 0u16, layer_water_entity);
 
     let center = layer_settings.get_pixel_center();
     commands
