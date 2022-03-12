@@ -13,34 +13,49 @@ fn render_map(
     let map_entity = commands.spawn().id();
     let mut map = Map::new(0u16, map_entity);
 
-    let layer_settings = LayerSettings::new(
-        MapSize(2, 2),
-        ChunkSize(32, 32),
-        TileSize(16., 16.),
-        TextureSize(64., 16.),
-    );
+    let map_size = MapSize(2, 2);
+    let chunk_size = ChunkSize(32, 32);
+    let tile_size = TileSize(16., 16.);
 
-    let (mut layer_builder, _) = LayerBuilder::new(
+    let layer_settings = LayerSettings::new(map_size, chunk_size, tile_size, TextureSize(64., 16.));
+
+    let (mut layer_water_builder, _) =
+        LayerBuilder::<TileBundle>::new(&mut commands, layer_settings, 0u16, 0u16);
+    layer_water_builder.set_all(TileBundle::default());
+
+    let (mut layer_builder, _) = LayerBuilder::<TileBundle>::new(
         &mut commands,
-        LayerSettings::new(
-            MapSize(2, 2),
-            ChunkSize(12, 12),
-            TileSize(16., 16.),
-            TextureSize(160., 128.),
-        ),
+        LayerSettings::new(map_size, chunk_size, tile_size, TextureSize(160., 128.)),
         0u16,
         1u16,
     );
-    layer_builder.set_all(TileBundle::default());
 
-    let (mut layer_water_builder, _) = LayerBuilder::new(&mut commands, layer_settings, 0u16, 0u16);
-    layer_water_builder.set_all(TileBundle::default());
+    // main fill
+    layer_builder.fill(
+        TilePos(16, 16),
+        TilePos(48, 48),
+        Tile {
+            texture_index: 0,
+            ..Default::default()
+        }
+        .into(),
+    );
 
     // edges
-    for x in 1..23 {
+    for x in 16..48 {
         layer_builder
             .set_tile(
-                TilePos(x, 0),
+                TilePos(x, 47),
+                Tile {
+                    texture_index: 32,
+                    ..Default::default()
+                }
+                .into(),
+            )
+            .unwrap();
+        layer_builder
+            .set_tile(
+                TilePos(x, 16),
                 Tile {
                     texture_index: 52,
                     ..Default::default()
@@ -49,22 +64,11 @@ fn render_map(
             )
             .unwrap();
     }
-    for x in 1..23 {
+
+    for x in 16..48 {
         layer_builder
             .set_tile(
-                TilePos(x, 23),
-                Tile {
-                    texture_index: 32,
-                    ..Default::default()
-                }
-                .into(),
-            )
-            .unwrap();
-    }
-    for x in 1..23 {
-        layer_builder
-            .set_tile(
-                TilePos(0, x),
+                TilePos(16, x),
                 Tile {
                     texture_index: 41,
                     ..Default::default()
@@ -72,11 +76,9 @@ fn render_map(
                 .into(),
             )
             .unwrap();
-    }
-    for x in 1..23 {
         layer_builder
             .set_tile(
-                TilePos(23, x),
+                TilePos(47, x),
                 Tile {
                     texture_index: 43,
                     ..Default::default()
@@ -89,7 +91,7 @@ fn render_map(
     // corners
     layer_builder
         .set_tile(
-            TilePos(0, 0),
+            TilePos(16, 16),
             Tile {
                 texture_index: 51,
                 ..Default::default()
@@ -99,9 +101,9 @@ fn render_map(
         .unwrap();
     layer_builder
         .set_tile(
-            TilePos(23, 0),
+            TilePos(16, 47),
             Tile {
-                texture_index: 53,
+                texture_index: 31,
                 ..Default::default()
             }
             .into(),
@@ -109,7 +111,7 @@ fn render_map(
         .unwrap();
     layer_builder
         .set_tile(
-            TilePos(23, 23),
+            TilePos(47, 47),
             Tile {
                 texture_index: 33,
                 ..Default::default()
@@ -119,9 +121,9 @@ fn render_map(
         .unwrap();
     layer_builder
         .set_tile(
-            TilePos(0, 23),
+            TilePos(47, 16),
             Tile {
-                texture_index: 31,
+                texture_index: 53,
                 ..Default::default()
             }
             .into(),
