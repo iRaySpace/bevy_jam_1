@@ -4,7 +4,9 @@ use crate::AppState;
 use bevy::prelude::*;
 
 #[derive(Component, Debug)]
-pub struct Player;
+pub struct Player {
+    pub speed: f32,
+}
 
 fn render_player(
     mut commands: Commands,
@@ -46,18 +48,21 @@ fn render_player(
             current_frame: 0,
             duration: Timer::from_seconds(0.1, true),
         })
-        .insert(Player);
+        .insert(Player { speed: 200. });
 }
 
-fn read_input(keyboard_input: Res<Input<KeyCode>>) {
-    if keyboard_input.pressed(KeyCode::Up) {
-        info!("Up");
-    } else if keyboard_input.pressed(KeyCode::Down) {
-        info!("Down");
-    } else if keyboard_input.pressed(KeyCode::Left) {
-        info!("Left");
-    } else if keyboard_input.pressed(KeyCode::Right) {
-        info!("Right");
+// TODO: стейт-машины анимации
+fn read_input(keyboard_input: Res<Input<KeyCode>>, mut query: Query<(&Player, &mut Transform)>, time: Res<Time>) {
+    if let Ok((player, mut transform)) = query.get_single_mut() {
+        if keyboard_input.pressed(KeyCode::Up) {
+            transform.translation.y += player.speed * time.delta_seconds();
+        } else if keyboard_input.pressed(KeyCode::Down) {
+            transform.translation.y -= player.speed * time.delta_seconds();
+        } else if keyboard_input.pressed(KeyCode::Left) {
+            transform.translation.x -= player.speed * time.delta_seconds();
+        } else if keyboard_input.pressed(KeyCode::Right) {
+            transform.translation.x += player.speed * time.delta_seconds();
+        }
     }
 }
 
