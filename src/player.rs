@@ -49,10 +49,23 @@ fn render_player(
         .insert(Player);
 }
 
+fn read_input(keyboard_input: Res<Input<KeyCode>>) {
+    if keyboard_input.pressed(KeyCode::Up) {
+        info!("Up");
+    } else if keyboard_input.pressed(KeyCode::Down) {
+        info!("Down");
+    } else if keyboard_input.pressed(KeyCode::Left) {
+        info!("Left");
+    } else if keyboard_input.pressed(KeyCode::Right) {
+        info!("Right");
+    }
+}
+
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(render_player));
+        app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(render_player))
+            .add_system_set(SystemSet::on_update(AppState::InGame).with_system(read_input));
     }
 }
