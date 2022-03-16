@@ -148,7 +148,7 @@ fn render_map(
     commands
         .entity(map_entity)
         .insert(map)
-        .insert(Transform::from_xyz(-center.x, -center.y, 0.))
+        .insert(Transform::from_xyz(-center.x, -center.y, crate::z::GROUND))
         .insert(GlobalTransform::default());
 }
 

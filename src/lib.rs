@@ -6,6 +6,7 @@ mod loading;
 mod map;
 mod menu;
 mod player;
+mod z;
 
 use crate::animation::AnimationPlugin;
 use crate::input::InputPlugin;
