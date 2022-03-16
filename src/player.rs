@@ -15,14 +15,12 @@ fn render_player(
     let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(48.0, 48.0), 4, 4);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    let mut transform = Transform::from_scale(Vec3::splat(3.0));
-    transform.translation.z = crate::z::PLAYER;
-    info!("{:?}", transform);
+    let translation = Vec3::new(0., 0., crate::z::PLAYER);
 
     commands
         .spawn_bundle(SpriteSheetBundle {
-            transform,
             texture_atlas: texture_atlas_handle,
+            transform: Transform::from_scale(Vec3::splat(3.0)).with_translation(translation),
             ..Default::default()
         })
         .insert(Animation {
