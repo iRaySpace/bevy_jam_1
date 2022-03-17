@@ -9,6 +9,70 @@ pub enum PlayerStateMachine {
     Moving,
 }
 
+#[derive(Debug, PartialEq)]
+pub enum PlayerAnimation {
+    UpMoving = 0,
+    RightMoving = 1,
+    DownMoving = 2,
+    LeftMoving = 3,
+    UpIdle = 4,
+    RightIdle = 5,
+    DownIdle = 6,
+    LeftIdle = 7,
+    None,
+}
+
+// TODO: Some or None
+impl PlayerAnimation {
+    fn from_u8(val: u8) -> PlayerAnimation {
+        match val {
+            0 => PlayerAnimation::UpMoving,
+            1 => PlayerAnimation::RightMoving,
+            2 => PlayerAnimation::DownMoving,
+            3 => PlayerAnimation::LeftMoving,
+            4 => PlayerAnimation::UpIdle,
+            5 => PlayerAnimation::RightIdle,
+            6 => PlayerAnimation::DownIdle,
+            7 => PlayerAnimation::LeftIdle,
+            _ => PlayerAnimation::None,
+        }
+    }
+    fn build(self) -> AnimationValue {
+        match self {
+            PlayerAnimation::UpMoving => AnimationValue {
+                frames: vec![4, 5, 6, 7],
+            },
+            PlayerAnimation::RightMoving => AnimationValue {
+                frames: vec![12, 13, 14, 15],
+            },
+            PlayerAnimation::DownMoving => AnimationValue {
+                frames: vec![0, 1, 2, 3],
+            },
+            PlayerAnimation::LeftMoving => AnimationValue {
+                frames: vec![8, 9, 10, 11],
+            },
+            PlayerAnimation::UpIdle => AnimationValue { frames: vec![4] },
+            PlayerAnimation::RightIdle => AnimationValue { frames: vec![12] },
+            PlayerAnimation::DownIdle => AnimationValue { frames: vec![0] },
+            PlayerAnimation::LeftIdle => AnimationValue { frames: vec![8] },
+            PlayerAnimation::None => AnimationValue { frames: vec![] },
+        }
+    }
+    fn next(self) -> PlayerAnimation {
+        match self {
+            PlayerAnimation::UpMoving => PlayerAnimation::UpIdle,
+            PlayerAnimation::RightMoving => PlayerAnimation::RightIdle,
+            PlayerAnimation::DownMoving => PlayerAnimation::DownIdle,
+            PlayerAnimation::LeftMoving => PlayerAnimation::LeftIdle,
+            PlayerAnimation::UpIdle => PlayerAnimation::UpIdle,
+            PlayerAnimation::RightIdle => PlayerAnimation::RightIdle,
+            PlayerAnimation::DownIdle => PlayerAnimation::DownIdle,
+            PlayerAnimation::LeftIdle => PlayerAnimation::LeftIdle,
+            PlayerAnimation::None => PlayerAnimation::None,
+        }
+    }
+}
+
 #[derive(Component, Debug)]
 pub struct Player {
     pub speed: f32,
@@ -34,25 +98,16 @@ fn render_player(
         })
         .insert(Animation {
             values: vec![
-                // 0: bottom
-                AnimationValue {
-                    frames: vec![0, 1, 2, 3],
-                },
-                // 1: top
-                AnimationValue {
-                    frames: vec![4, 5, 6, 7],
-                },
-                // 2: left
-                AnimationValue {
-                    frames: vec![8, 9, 10, 11],
-                },
-                // 3: right
-                AnimationValue {
-                    frames: vec![12, 13, 14, 15],
-                },
-                AnimationValue { frames: vec![0] },
+                PlayerAnimation::build(PlayerAnimation::UpMoving),
+                PlayerAnimation::build(PlayerAnimation::RightMoving),
+                PlayerAnimation::build(PlayerAnimation::DownMoving),
+                PlayerAnimation::build(PlayerAnimation::LeftMoving),
+                PlayerAnimation::build(PlayerAnimation::UpIdle),
+                PlayerAnimation::build(PlayerAnimation::RightIdle),
+                PlayerAnimation::build(PlayerAnimation::DownIdle),
+                PlayerAnimation::build(PlayerAnimation::LeftIdle),
             ],
-            current_value: 0,
+            current_value: PlayerAnimation::DownIdle as u8,
             current_frame: 0,
             duration: Timer::from_seconds(0.1, true),
         })
@@ -64,35 +119,30 @@ fn render_player(
 
 fn read_input(
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut Player, &mut Transform)>,
+    mut query: Query<(&mut Player, &mut Transform, &mut Animation)>,
     time: Res<Time>,
 ) {
-    if let Ok((mut player, mut transform)) = query.get_single_mut() {
+    if let Ok((mut player, mut transform, mut animation)) = query.get_single_mut() {
         if keyboard_input.pressed(KeyCode::Up) {
             player.state = PlayerStateMachine::Moving;
+            animation.current_value = PlayerAnimation::UpMoving as u8;
             transform.translation.y += player.speed * time.delta_seconds();
         } else if keyboard_input.pressed(KeyCode::Down) {
             player.state = PlayerStateMachine::Moving;
+            animation.current_value = PlayerAnimation::DownMoving as u8;
             transform.translation.y -= player.speed * time.delta_seconds();
         } else if keyboard_input.pressed(KeyCode::Left) {
             player.state = PlayerStateMachine::Moving;
+            animation.current_value = PlayerAnimation::LeftMoving as u8;
             transform.translation.x -= player.speed * time.delta_seconds();
         } else if keyboard_input.pressed(KeyCode::Right) {
             player.state = PlayerStateMachine::Moving;
+            animation.current_value = PlayerAnimation::RightMoving as u8;
             transform.translation.x += player.speed * time.delta_seconds();
         } else {
             player.state = PlayerStateMachine::Idle;
-        }
-    }
-}
-
-fn update_state(mut query: Query<(&Player, &mut Animation)>) {
-    if let Ok((player, mut animation)) = query.get_single_mut() {
-        if player.state == PlayerStateMachine::Idle {
-            animation.current_value = 4;
-            animation.current_frame = 0;
-        } else if player.state == PlayerStateMachine::Moving {
-            animation.current_value = 0;
+            animation.current_value =
+                PlayerAnimation::next(PlayerAnimation::from_u8(animation.current_value)) as u8;
         }
     }
 }
@@ -102,10 +152,6 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(render_player))
-            .add_system_set(
-                SystemSet::on_update(AppState::InGame)
-                    .with_system(read_input)
-                    .with_system(update_state),
-            );
+            .add_system_set(SystemSet::on_update(AppState::InGame).with_system(read_input));
     }
 }
