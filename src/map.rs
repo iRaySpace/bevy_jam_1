@@ -153,19 +153,96 @@ fn render_map(
         .insert(GlobalTransform::default());
 
     // collision
+    // top
     commands
-        .spawn_bundle(SpriteBundle {
-            sprite: Sprite {
-                color: Color::GREEN,
-                custom_size: Some(Vec2::new(30., 30.)),
-                ..Default::default()
-            },
-            transform: Transform::from_translation(Vec3::new(0., 200., crate::z::WALLS)),
-            ..Default::default()
-        })
+        // .spawn_bundle(SpriteBundle {
+        //     sprite: Sprite {
+        //         color: Color::GREEN,
+        //         custom_size: Some(Vec2::new(510., 30.)),
+        //         ..Default::default()
+        //     },
+        //     transform: Transform::from_translation(Vec3::new(0., 280., crate::z::WALLS)),
+        //     ..Default::default()
+        // })
+        .spawn()
+        .insert(Transform::from_translation(Vec3::new(
+            0.,
+            280.,
+            crate::z::WALLS,
+        )))
+        .insert(GlobalTransform::default())
         .insert(RigidBody::Static)
         .insert(CollisionShape::Cuboid {
-            half_extends: Vec3::new(30., 30., 0.) / 2.0,
+            half_extends: Vec3::new(510., 30., 0.) / 2.0,
+            border_radius: None,
+        });
+    // bottom
+    commands
+        // .spawn_bundle(SpriteBundle {
+        //     sprite: Sprite {
+        //         color: Color::GREEN,
+        //         custom_size: Some(Vec2::new(510., 30.)),
+        //         ..Default::default()
+        //     },
+        //     transform: Transform::from_translation(Vec3::new(0., -250., crate::z::WALLS)),
+        //     ..Default::default()
+        // })
+        .spawn()
+        .insert(Transform::from_translation(Vec3::new(
+            0.,
+            -250.,
+            crate::z::WALLS,
+        )))
+        .insert(GlobalTransform::default())
+        .insert(RigidBody::Static)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(510., 30., 0.) / 2.0,
+            border_radius: None,
+        });
+    // left
+    commands
+        // .spawn_bundle(SpriteBundle {
+        //     sprite: Sprite {
+        //         color: Color::GREEN,
+        //         custom_size: Some(Vec2::new(30., 510.)),
+        //         ..Default::default()
+        //     },
+        //     transform: Transform::from_translation(Vec3::new(-270., 0., crate::z::WALLS)),
+        //     ..Default::default()
+        // })
+        .spawn()
+        .insert(Transform::from_translation(Vec3::new(
+            -270.,
+            0.,
+            crate::z::WALLS,
+        )))
+        .insert(GlobalTransform::default())
+        .insert(RigidBody::Static)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(30., 510., 0.) / 2.0,
+            border_radius: None,
+        });
+    // right
+    commands
+        // .spawn_bundle(SpriteBundle {
+        //     sprite: Sprite {
+        //         color: Color::GREEN,
+        //         custom_size: Some(Vec2::new(30., 510.)),
+        //         ..Default::default()
+        //     },
+        //     transform: Transform::from_translation(Vec3::new(270., 0., crate::z::WALLS)),
+        //     ..Default::default()
+        // })
+        .spawn()
+        .insert(Transform::from_translation(Vec3::new(
+            270.,
+            0.,
+            crate::z::WALLS,
+        )))
+        .insert(GlobalTransform::default())
+        .insert(RigidBody::Static)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(30., 510., 0.) / 2.0,
             border_radius: None,
         });
 }
