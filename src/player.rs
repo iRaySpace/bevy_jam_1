@@ -2,6 +2,7 @@ use crate::animation::{Animation, AnimationValue};
 use crate::loading::SpritesheetAssets;
 use crate::AppState;
 use bevy::prelude::*;
+use heron::prelude::*;
 
 #[derive(Debug, PartialEq)]
 pub enum PlayerStateMachine {
@@ -84,8 +85,10 @@ fn render_player(
     spritesheet_assets: Res<SpritesheetAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
+    let size = Vec2::new(48., 48.);
+
     let texture = spritesheet_assets.character.clone();
-    let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(48.0, 48.0), 4, 4);
+    let texture_atlas = TextureAtlas::from_grid(texture, size, 4, 4);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
     let translation = Vec3::new(0., 0., crate::z::PLAYER);
@@ -114,35 +117,42 @@ fn render_player(
         .insert(Player {
             speed: 200.,
             state: PlayerStateMachine::Idle,
-        });
+        })
+        .insert(RigidBody::Dynamic)
+        .insert(RotationConstraints::lock())
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec2::new(24.0, 24.0).extend(0.0) / 2.0,
+            border_radius: None,
+        })
+        .insert(Velocity::default());
 }
 
 fn read_input(
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut Player, &mut Transform, &mut Animation)>,
-    time: Res<Time>,
+    mut query: Query<(&mut Player, &mut Animation, &mut Velocity)>,
 ) {
-    if let Ok((mut player, mut transform, mut animation)) = query.get_single_mut() {
+    if let Ok((mut player, mut animation, mut velocity)) = query.get_single_mut() {
         if keyboard_input.pressed(KeyCode::Up) {
             player.state = PlayerStateMachine::Moving;
             animation.current_value = PlayerAnimation::UpMoving as u8;
-            transform.translation.y += player.speed * time.delta_seconds();
+            velocity.linear = Vec2::new(0.0, 1.0).extend(0.0) * player.speed;
         } else if keyboard_input.pressed(KeyCode::Down) {
             player.state = PlayerStateMachine::Moving;
             animation.current_value = PlayerAnimation::DownMoving as u8;
-            transform.translation.y -= player.speed * time.delta_seconds();
+            velocity.linear = Vec2::new(0.0, -1.0).extend(0.0) * player.speed;
         } else if keyboard_input.pressed(KeyCode::Left) {
             player.state = PlayerStateMachine::Moving;
             animation.current_value = PlayerAnimation::LeftMoving as u8;
-            transform.translation.x -= player.speed * time.delta_seconds();
+            velocity.linear = Vec2::new(-1.0, 0.0).extend(0.0) * player.speed;
         } else if keyboard_input.pressed(KeyCode::Right) {
             player.state = PlayerStateMachine::Moving;
             animation.current_value = PlayerAnimation::RightMoving as u8;
-            transform.translation.x += player.speed * time.delta_seconds();
+            velocity.linear = Vec2::new(1.0, 0.0).extend(0.0) * player.speed;
         } else {
             player.state = PlayerStateMachine::Idle;
             animation.current_value =
                 PlayerAnimation::next(PlayerAnimation::from_u8(animation.current_value)) as u8;
+            velocity.linear = Vec2::new(0.0, 0.0).extend(0.0);
         }
     }
 }

@@ -2,6 +2,7 @@ use crate::loading::SpritesheetAssets;
 use crate::AppState;
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
+use heron::prelude::*;
 
 fn render_map(
     mut commands: Commands,
@@ -150,6 +151,23 @@ fn render_map(
         .insert(map)
         .insert(Transform::from_xyz(-center.x, -center.y, crate::z::GROUND))
         .insert(GlobalTransform::default());
+
+    // collision
+    commands
+        .spawn_bundle(SpriteBundle {
+            sprite: Sprite {
+                color: Color::GREEN,
+                custom_size: Some(Vec2::new(30., 30.)),
+                ..Default::default()
+            },
+            transform: Transform::from_translation(Vec3::new(0., 200., crate::z::WALLS)),
+            ..Default::default()
+        })
+        .insert(RigidBody::Static)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(30., 30., 0.) / 2.0,
+            border_radius: None,
+        });
 }
 
 pub struct MapPlugin;
