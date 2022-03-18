@@ -21,6 +21,9 @@ pub struct SpritesheetAssets {
 
     #[asset(path = "spritesheets/water.png")]
     pub water: Handle<Image>,
+
+    #[asset(path = "spritesheets/milk_grass.png")]
+    pub milk_grass: Handle<Image>,
 }
 
 impl Plugin for LoadingPlugin {
