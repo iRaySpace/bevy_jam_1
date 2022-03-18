@@ -124,7 +124,12 @@ fn render_player(
             half_extends: Vec2::new(24.0, 24.0).extend(0.0) / 2.0,
             border_radius: None,
         })
-        .insert(Velocity::default());
+        .insert(Velocity::default())
+        .insert(
+            CollisionLayers::none()
+                .with_group(crate::physics::Layer::Player)
+                .with_mask(crate::physics::Layer::Consumable),
+        );
 }
 
 fn read_input(
@@ -157,11 +162,40 @@ fn read_input(
     }
 }
 
+fn player_consumable_collision(mut commands: Commands, mut events: EventReader<CollisionEvent>) {
+    for event in events.iter() {
+        if event.is_started() {
+            let (entity_x, entity_y) = event.rigid_body_entities();
+            let (layers_x, layers_y) = event.collision_layers();
+            if is_player(layers_x) && is_consumable(layers_y) {
+                commands.entity(entity_y).despawn();
+            }
+            if is_consumable(layers_x) && is_player(layers_y) {
+                commands.entity(entity_x).despawn();
+            }
+        }
+    }
+}
+
+fn is_player(layers: CollisionLayers) -> bool {
+    layers.contains_group(crate::physics::Layer::Player)
+        && !layers.contains_group(crate::physics::Layer::Consumable)
+}
+
+fn is_consumable(layers: CollisionLayers) -> bool {
+    layers.contains_group(crate::physics::Layer::Consumable)
+        && !layers.contains_group(crate::physics::Layer::Player)
+}
+
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(render_player))
-            .add_system_set(SystemSet::on_update(AppState::InGame).with_system(read_input));
+            .add_system_set(
+                SystemSet::on_update(AppState::InGame)
+                    .with_system(read_input)
+                    .with_system(player_consumable_collision),
+            );
     }
 }

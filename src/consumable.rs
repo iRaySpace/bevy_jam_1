@@ -26,8 +26,8 @@ fn render_consumable(
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
             transform: Transform::from_scale(Vec3::splat(3.0)).with_translation(Vec3::new(
-                36.,
-                36.,
+                64.,
+                64.,
                 crate::z::CONSUMABLES,
             )),
             sprite: TextureAtlasSprite {
@@ -40,7 +40,12 @@ fn render_consumable(
         .insert(CollisionShape::Cuboid {
             half_extends: size.extend(0.0) / 2.0,
             border_radius: None,
-        });
+        })
+        .insert(
+            CollisionLayers::none()
+                .with_group(crate::physics::Layer::Consumable)
+                .with_mask(crate::physics::Layer::Player),
+        );
 }
 
 pub struct ConsumablePlugin;

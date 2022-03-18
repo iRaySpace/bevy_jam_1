@@ -1,5 +1,11 @@
 use bevy::prelude::*;
-use heron::Gravity;
+use heron::prelude::*;
+
+#[derive(PhysicsLayer)]
+pub enum Layer {
+    Player,
+    Consumable,
+}
 
 pub struct PhysicsPlugin;
 
