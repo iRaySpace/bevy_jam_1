@@ -3,6 +3,8 @@ use crate::loading::SpritesheetAssets;
 use crate::AppState;
 use bevy::prelude::*;
 use heron::prelude::*;
+use crate::player::Player;
+use crate::health::{GameStats, increase_health};
 
 #[derive(Debug, PartialEq)]
 pub enum AnimalAnimation {
@@ -57,13 +59,50 @@ fn render_animal(
         .insert(CollisionShape::Cuboid {
             half_extends: size.extend(0.0) / 2.0,
             border_radius: None,
-        });
+        })
+        .insert(
+            CollisionLayers::none()
+                .with_group(crate::physics::Layer::Animal)
+                .with_mask(crate::physics::Layer::Player),
+        );
+}
+
+fn animal_player_collision(mut commands: Commands, mut events: EventReader<CollisionEvent>, mut query: Query<&mut Player>, mut game_stats: ResMut<GameStats>) {
+    for event in events.iter() {
+        if event.is_started() {
+            let (entity_x, entity_y) = event.rigid_body_entities();
+            let (layers_x, layers_y) = event.collision_layers();
+            if is_animal(layers_x) && is_player(layers_y) {
+                if let Ok(mut player) = query.get_single_mut() {
+                    increase_health(&mut player, &mut game_stats);
+                }
+            }
+            if is_player(layers_x) && is_animal(layers_y) {
+                if let Ok(mut player) = query.get_single_mut() {
+                    increase_health(&mut player, &mut game_stats);
+                }
+            }
+        }
+    }
+}
+
+fn is_animal(layers: CollisionLayers) -> bool {
+    layers.contains_group(crate::physics::Layer::Animal)
+        && !layers.contains_group(crate::physics::Layer::Player)
+}
+
+fn is_player(layers: CollisionLayers) -> bool {
+    layers.contains_group(crate::physics::Layer::Player)
+        && !layers.contains_group(crate::physics::Layer::Animal)
 }
 
 pub struct AnimalPlugin;
 
 impl Plugin for AnimalPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(render_animal));
+        app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(render_animal))
+            .add_system_set(
+                SystemSet::on_update(AppState::InGame).with_system(animal_player_collision),
+            );
     }
 }

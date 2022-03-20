@@ -5,6 +5,7 @@ use heron::prelude::*;
 pub enum Layer {
     Player,
     Consumable,
+    Animal,
 }
 
 pub struct PhysicsPlugin;

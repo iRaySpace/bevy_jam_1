@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::loading::FontAssets;
 use crate::AppState;
+use crate::player::Player;
 
 #[derive(Debug)]
 pub struct GameStats {
@@ -50,6 +51,11 @@ fn reduce_health(
     for mut text in query.iter_mut() {
         text.sections[0].value = format!("Health: {:.0}", game_stats.health);
     }
+}
+
+pub fn increase_health(mut player: &mut Player, mut game_stats: &mut ResMut<GameStats>) {
+    game_stats.health += (player.grass * 5) as f32;
+    player.grass = 0;
 }
 
 pub struct HealthPlugin;

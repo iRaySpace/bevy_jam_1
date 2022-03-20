@@ -78,6 +78,7 @@ impl PlayerAnimation {
 pub struct Player {
     pub speed: f32,
     pub state: PlayerStateMachine,
+    pub grass: u8,
 }
 
 fn render_player(
@@ -117,6 +118,7 @@ fn render_player(
         .insert(Player {
             speed: 200.,
             state: PlayerStateMachine::Idle,
+            grass: 0,
         })
         .insert(RigidBody::Dynamic)
         .insert(RotationConstraints::lock())
@@ -128,7 +130,8 @@ fn render_player(
         .insert(
             CollisionLayers::none()
                 .with_group(crate::physics::Layer::Player)
-                .with_mask(crate::physics::Layer::Consumable),
+                .with_mask(crate::physics::Layer::Consumable)
+                .with_mask(crate::physics::Layer::Animal),
         );
 }
 
@@ -162,16 +165,22 @@ fn read_input(
     }
 }
 
-fn player_consumable_collision(mut commands: Commands, mut events: EventReader<CollisionEvent>) {
+fn player_consumable_collision(mut commands: Commands, mut events: EventReader<CollisionEvent>, mut query: Query<&mut Player>) {
     for event in events.iter() {
         if event.is_started() {
             let (entity_x, entity_y) = event.rigid_body_entities();
             let (layers_x, layers_y) = event.collision_layers();
             if is_player(layers_x) && is_consumable(layers_y) {
                 commands.entity(entity_y).despawn();
+                if let Ok(mut player) = query.get_single_mut() {
+                    player.grass += 1;
+                }
             }
             if is_consumable(layers_x) && is_player(layers_y) {
                 commands.entity(entity_x).despawn();
+                if let Ok(mut player) = query.get_single_mut() {
+                    player.grass += 1;
+                }
             }
         }
     }
