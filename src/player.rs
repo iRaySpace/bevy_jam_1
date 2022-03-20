@@ -112,7 +112,7 @@ fn render_player(
             ],
             current_value: PlayerAnimation::DownIdle as u8,
             current_frame: 0,
-            duration: Timer::from_seconds(0.1, true),
+            duration: Timer::from_seconds(0.2, true),
         })
         .insert(Player {
             speed: 200.,

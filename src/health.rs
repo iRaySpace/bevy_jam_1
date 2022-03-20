@@ -15,7 +15,7 @@ fn render_health(mut commands: Commands, font_assets: Res<FontAssets>, game_stat
     commands
         .spawn_bundle(TextBundle {
             style: Style {
-                align_self: AlignSelf::FlexEnd,
+                align_self: AlignSelf::FlexStart,
                 position_type: PositionType::Absolute,
                 position: Rect {
                     top: Val::Px(5.0),

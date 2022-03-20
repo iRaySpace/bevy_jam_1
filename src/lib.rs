@@ -1,5 +1,6 @@
 use bevy::{input::system::exit_on_esc_system, prelude::*};
 
+mod animal;
 mod animation;
 mod consumable;
 mod health;
@@ -10,6 +11,7 @@ mod physics;
 mod player;
 mod z;
 
+use crate::animal::AnimalPlugin;
 use crate::animation::AnimationPlugin;
 use crate::consumable::ConsumablePlugin;
 use crate::health::HealthPlugin;
@@ -40,6 +42,7 @@ impl Plugin for GamePlugin {
             .add_plugin(PlayerPlugin)
             .add_plugin(ConsumablePlugin)
             .add_plugin(HealthPlugin)
+            .add_plugin(AnimalPlugin)
             .add_system(exit_on_esc_system);
     }
 }
