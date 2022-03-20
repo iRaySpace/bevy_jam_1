@@ -1,10 +1,10 @@
 use crate::animation::{Animation, AnimationValue};
+use crate::health::{increase_health, GameStats};
 use crate::loading::SpritesheetAssets;
+use crate::player::Player;
 use crate::AppState;
 use bevy::prelude::*;
 use heron::prelude::*;
-use crate::player::Player;
-use crate::health::{GameStats, increase_health};
 
 #[derive(Debug, PartialEq)]
 pub enum AnimalAnimation {
@@ -67,7 +67,12 @@ fn render_animal(
         );
 }
 
-fn animal_player_collision(mut commands: Commands, mut events: EventReader<CollisionEvent>, mut query: Query<&mut Player>, mut game_stats: ResMut<GameStats>) {
+fn animal_player_collision(
+    mut commands: Commands,
+    mut events: EventReader<CollisionEvent>,
+    mut query: Query<&mut Player>,
+    mut game_stats: ResMut<GameStats>,
+) {
     for event in events.iter() {
         if event.is_started() {
             let (entity_x, entity_y) = event.rigid_body_entities();

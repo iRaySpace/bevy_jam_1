@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use crate::loading::FontAssets;
-use crate::AppState;
 use crate::player::Player;
+use crate::AppState;
 
 #[derive(Debug)]
 pub struct GameStats {

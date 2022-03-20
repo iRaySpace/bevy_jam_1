@@ -165,7 +165,11 @@ fn read_input(
     }
 }
 
-fn player_consumable_collision(mut commands: Commands, mut events: EventReader<CollisionEvent>, mut query: Query<&mut Player>) {
+fn player_consumable_collision(
+    mut commands: Commands,
+    mut events: EventReader<CollisionEvent>,
+    mut query: Query<&mut Player>,
+) {
     for event in events.iter() {
         if event.is_started() {
             let (entity_x, entity_y) = event.rigid_body_entities();
