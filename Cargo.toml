@@ -10,3 +10,4 @@ bevy = "0.6.1"
 bevy_asset_loader = "0.9"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap", rev = "127759b55e84f43e35182988bd74bd23ef9e8108" }
 heron = { version = "2.2.0", features = ["2d"] }
+rand = "0.8.5"

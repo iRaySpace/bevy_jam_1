@@ -470,6 +470,7 @@ dependencies = [
  "bevy_asset_loader",
  "bevy_ecs_tilemap",
  "heron",
+ "rand",
 ]
 
 [[package]]
