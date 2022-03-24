@@ -53,7 +53,7 @@ fn reduce_health(
     }
 }
 
-pub fn increase_health(mut player: &mut Player, mut game_stats: &mut ResMut<GameStats>) {
+pub fn increase_health(mut player: &mut Player, game_stats: &mut ResMut<GameStats>) {
     game_stats.health += (player.grass * 5) as f32;
     player.grass = 0;
 }

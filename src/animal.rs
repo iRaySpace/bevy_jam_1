@@ -77,7 +77,6 @@ fn render_animal(
 }
 
 fn animal_player_collision(
-    mut commands: Commands,
     mut events: EventReader<CollisionEvent>,
     mut query: Query<&mut Player>,
     mut animal_query: Query<&mut Transform, With<Animal>>,
@@ -85,7 +84,7 @@ fn animal_player_collision(
 ) {
     for event in events.iter() {
         if event.is_started() {
-            let (entity_x, entity_y) = event.rigid_body_entities();
+            // let (_entity_x, _entity_y) = event.rigid_body_entities();
             let (layers_x, layers_y) = event.collision_layers();
             if is_animal(layers_x) && is_player(layers_y) {
                 if let Ok(mut player) = query.get_single_mut() {
