@@ -41,7 +41,11 @@ fn render_animal(
     let texture_atlas = TextureAtlas::from_grid(texture, size, 8, 9);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    let translation = Vec3::new(-100., -100., crate::z::ANIMAL);
+    let mut rng = rand::thread_rng();
+    let x: i8 = rng.gen();
+    let y: i8 = rng.gen();
+
+    let translation = Vec3::new(x.into(), y.into(), crate::z::ANIMAL);
 
     commands
         .spawn_bundle(SpriteSheetBundle {
