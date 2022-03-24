@@ -5,12 +5,16 @@ use crate::player::Player;
 use crate::AppState;
 use bevy::prelude::*;
 use heron::prelude::*;
+use rand::prelude::*;
 
 #[derive(Debug, PartialEq)]
 pub enum AnimalAnimation {
     Idle = 0,
     Eating = 1,
 }
+
+#[derive(Component, Debug)]
+struct Animal;
 
 // TODO: Some or None
 impl AnimalAnimation {
@@ -54,6 +58,7 @@ fn render_animal(
             current_frame: 0,
             duration: Timer::from_seconds(0.2, true),
         })
+        .insert(Animal)
         .insert(RigidBody::Static)
         .insert(RotationConstraints::lock())
         .insert(CollisionShape::Cuboid {
@@ -71,6 +76,7 @@ fn animal_player_collision(
     mut commands: Commands,
     mut events: EventReader<CollisionEvent>,
     mut query: Query<&mut Player>,
+    mut animal_query: Query<&mut Transform, With<Animal>>,
     mut game_stats: ResMut<GameStats>,
 ) {
     for event in events.iter() {
@@ -81,10 +87,24 @@ fn animal_player_collision(
                 if let Ok(mut player) = query.get_single_mut() {
                     increase_health(&mut player, &mut game_stats);
                 }
+                if let Ok(mut transform) = animal_query.get_single_mut() {
+                    let mut rng = rand::thread_rng();
+                    let x: i8 = rng.gen();
+                    let y: i8 = rng.gen();
+                    transform.translation.x = x.into();
+                    transform.translation.y = y.into();
+                }
             }
             if is_player(layers_x) && is_animal(layers_y) {
                 if let Ok(mut player) = query.get_single_mut() {
                     increase_health(&mut player, &mut game_stats);
+                }
+                if let Ok(mut transform) = animal_query.get_single_mut() {
+                    let mut rng = rand::thread_rng();
+                    let x: i8 = rng.gen();
+                    let y: i8 = rng.gen();
+                    transform.translation.x = x.into();
+                    transform.translation.y = y.into();
                 }
             }
         }
